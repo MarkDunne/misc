@@ -1,0 +1,47 @@
+Linear Regression
+
+	x superscript i = ith example of x
+	x subscript j = jth feature in x
+
+
+KNN
+	Uniform, Distance, Shepards
+
+	Advantages
+		Can fit complex data
+		Can be easily modified to use non-numeric data given the correct distance formula
+		Simple to incrementally add more data
+	Disadvantages
+		High Prediction cost
+		Curse of dimensionality
+			Naive KNN cannot evaluate the importance of features, which can lead to problem.
+			But KNN can use feature weights in the distance formula. 
+			Weights can come from domain expert or as hyperparameters
+
+Error Estimation
+	Holdout
+		High variance in results
+	Repeated Holdout
+		Higher confidence than holdout, but training/test sets may overlap
+	k-Fold
+		High variance between folds, but no overlap
+		Can't allow any fold with less than 30 examples
+	Repeated k-Fold
+		High confidence, no overlap
+	Leave-One-Out
+		Max amount of training data used
+		No randomness between results (good)
+		But, expensive (not so much for kNN where training is cheap)
+
+Model Selection
+
+
+Underfitting / Overfitting
+	Underfitting - model not complex enough
+	Overfitting  - model too complex
+
+	Know shape of bias/variance curve (test and training lines)
+
+
+	Learning Curve
+		The test score tends towards the irreducible error
