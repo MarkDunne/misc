@@ -1,0 +1,3 @@
+The constraint satisfaction problem is
+	given three a set of variables V, a set of domains D, and a set of constraints C
+	For all variables Vi, find a value from domain Di which satisfy all constraints. 
