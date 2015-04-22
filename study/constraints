@@ -1,0 +1,324 @@
+The constraint satisfaction problem is
+	given three a set of variables V, a set of domains D, and a set of constraints C
+	For all variables Vi, find a value from domain Di which satisfy all constraints. 
+
+
+Types of consistency (lecture 3)
+	node consistency
+		unary (single variable) constraints
+	bounds consistency
+		integer bounds have support in the constraint
+	path consistency
+		triangular type consistency thing
+	arc consistency
+		if there is support for every value in one domain under the a constraint with another
+
+Arc Consistency
+	Revise
+		Revise Cxy only revises Dx, need to revise Cyx to revise Cy
+
+		Given constraint Cxy
+		for each value in Dx
+			if there no support for that value in Dy under Cxy, remove it
+		return boolean whether any were removed
+	
+
+	AC3 Algorithm
+		Add all inverse constraints to the queue
+		For each constraint in the queue
+			if it can be revised
+				if the domain is empty
+					stop - no solution
+				else
+					for each constraint featuring the co-variable
+						add it to the queue
+
+
+Search
+	Backtracking
+		iterate through the variables
+		when a value is assigned to a variable, check that it is consistent with previously assigned variables under given constraints
+		if it is, move the the next variable
+		if not, move to the next value
+		if out of values, go back to the previous variable
+
+
+		can lead to large amount of thrasing
+
+
+	Backjumping			
+
+		conflict = constraint gets broken for a particular value
+
+		when there is a conflict and a backtrack occurs, dont just jump back to the previous variable, jump back to the deepest variable that caused the conflict
+
+		after one jump back, need to backtrack one step at a time so not to miss solutions
+
+	Conflict Directed Backjumping (CBJ)
+
+		Like backjumping, but this time remember a set of conflicting values, just just the deepest.
+
+		when a conflict happens, jump back to the deepest in the conflict set and add that set to that variable (minus the variable itself)
+
+		it is correct and complete
+
+	forward checking
+		in backtracking, instead of checking whether there is conflicts with previously assigned variables when assigning a new one; when assigning new variables, remove all conflicting values from co-variable domains
+
+		a conflict occurs when there is a domain wipe out
+
+		still thrashes
+
+		could improve by combining with CBJ, not studied. This is known to be a good combination
+		could improve by checking if domain reduced to one value, and just assign it straight away
+		could make variable completely dynamic, choose next variable by smallest domain
+		could run AC algorithm every time a domain is reduced 
+
+
+		backtracking doesnt reduce domains of unassigned variables, forward checking does
+
+	MAC
+		maintaining arc consistency
+
+	Note
+		AC algorithms are polynomial while backtracking is exponential
+		running ac as much as possible will pay off in bigger problems
+
+
+All Different Constraint
+	Can convert csp problem to bipartie graph
+		where left vertices are variables
+			  right verticies are values
+
+	A matching in a graph is a subset of its edges, no two of which share an endpoint.
+	An all different constraint will impose a maximum matching on the constructed bipartite graph
+	maximum matching can be done in polynomial time (implied use of augmenting paths?)
+
+	if there is an edge that is not in any maximum matching solution, it cannot be in any solution
+
+
+	A variable is generalised arc consistent if and only if there is a solution to the CSP containing for every value in its domain. 
+	A constraint is generalised arc consistent (GAC) if and only if it is GAC for each variable in its scope. 
+
+
+Search Heuristics 1
+	Change variable search order
+
+	"Most difficult first" principle
+		Try to identify mistakes quickly
+		mistakes should me more common in "difficult" variables6
+
+	Static Ordering
+		Lexicographic
+			Take whatever order is given
+
+		Minimum bandwidth
+			bandwidth = distance between two constraint neighbours in the ordering
+			minimum bandwidth = bandwidth with lowest maximum bandwidth among variables
+
+			but finding the minimum bandwidth order is NP-hard 
+
+		Largest Degree
+			sort by number of constraints on the variable
+			(same as sorting by number of edges from vertices on a graph)
+
+		Max cardinality
+			(kinda like greedy minimum bandwidth)
+			Pick a variable to start the ordering by max degree
+			For each successive variable, find those with the biggest number of neighbours already in the order, and pick one of them (breaking ties by max degree)
+
+			shown to work best (out of the above) for randomly generated problems
+
+	Dynamic Ordering
+		Order by domain size
+			Smallest probably hardest	
+
+		Dom / Deg
+			Domain size / variable degree, smallest to largest
+
+			A variable with more constraints with unassigned variables is more likely to be difficult to assign.
+
+		Dom / wDeg
+			Maintain a counter for each constraint, increment each time it causes a backtrack
+			Use constaint counters to weight the degrees
+			Higher counter number probably means more difficult
+
+Search Heuristics 2
+	Choosing best value to try next
+	Principles
+		Want to choose a value that is likely to be in a solution
+
+		if we are on a path that cannot lead to a solution but haven't spotted it yet, we want to try a value whose removal is most likely to reveal that there is no solution below this point
+
+	For every problem there is a perfect value ordering, even approximations will give large improvement
+
+	Min Conflicts
+		Choose value based on fewest of conflicts with future values
+		i.e choose based on largest remaining aggregate number of values for unassigned variables
+
+	Cruciality
+		choose based on the ratios of conflicting future values of each domain
+
+	Promise
+		choose based on the product of the number of values remaining in the domains of unassigned variables
+		higher is better
+
+	2-way branching
+		After a value is assigned, it might be that the variable order could change
+		2-way branching is a way to model that. one branch is the choice of choosing a particular value, the other is a choice of not choosing it. variable orders can be different in each path
+
+		2-way branching allows us to propagate on the failure of a value choice, and to change our variable selection
+
+	n-way (or d-way, d for domain) branching
+		try each remainining value
+
+	Impact strategy
+		Estimate impact of variable choices using a limited depth search before starting
+		Impact for a variable is the average impact of its values
+		Use these impacts to choose which one to order variables/values
+		Update as search progresses
+
+Symmettry
+	Simple models
+		Can be broken by adding symmettry breaking constraints to leave only 1 solution		
+
+	Matrix models (more general)
+		Symmettry is when one solution can be generated by permutations of the rows or columns of another
+
+		Can be broken by imposing lexicographic order on the matrix, a total order
+		Dictionary-like ordering of the rows
+
+		Lexicographic ordering, doesn't remove all symmetrical solutions, but a lot of them
+
+CSP Complexity
+
+	With n variables and d values each, there are d^n possible assignments
+
+	Approximation 
+		Randomised construction heuristics
+
+			1. while variables unassigned
+			2. 		choose a variable to assign based on heuristic
+			3. 		choose a value to assign based on heuristic
+			4. 		propagate assignment to other domains
+			5. 		if domain wipeout
+			6. 			fail
+
+			unlikely to succeed
+
+		Probing	
+
+			1. while stopping criterion not met
+			2. 		(re-)initialise problem
+			3. 		while variables unassigned and not wipeout
+			4. 			choose a variable to assign based on heuristic
+			5. 			choose a value to assign based on heuristic
+			6. 			propagate assignment to other domains
+
+
+			use random selection to break ties
+			doesn't fail on first domain wipeout, but still probably wont work
+
+		Randomised restarts
+
+			1. initialise backtracking limit
+			2. while not found a solution
+			3. 		(re-)initialise problem
+			4. 		backtracking search up to a backtrack limit or solution
+			5. 		if solution return solution
+			6. 		else increase backtracking limit
+
+			will find a solution eventually if backtracking limit keep increasing
+
+
+Local Search
+	With approximations, we abandoned systematic search. If doing this, we could instead just search through the assignment space directly - so this local search			
+
+	An assignment of all variables, X, has a set of neighbour assignments, X', where they differ to X in only one variable assignment each
+
+	While X is not a solution, search through its neighbours
+
+	Min Conflicts
+		Choose next neighbour by min conflicts, i.e minimum number of unsatisfied constraints
+
+		works on problems with lots of solutions
+		should start with a greedy assignment (initiallly choosing values with fewest conflicts)
+
+
+	Meta heuristics
+		used to guide the search strategy	
+		struggle on problems with difficult constraints
+
+		simulated annealing 
+			allow some locally non-optimal solutions with some probability
+			probability based on fitness (more fit, less probability)
+			good at chip design
+
+
+		tabu search
+			force move when at local minima
+			remember tabu list of previously seen locations to avoid loops
+			good at scheduling
+
+		genetic algorithms
+			breed populations of solutions
+
+
+Large neighbourhood search		
+	Instead of just searching neighbours of complete assignments, we can de-assign some variables in a complete assignment, then restart the search focusing on the de-assigned variables
+
+	if we de-assign too little variables, will probably end up back at original assignment; best result are making large moves
+
+	best results de-assign groups of related variables. otherwise arrive back at same solution through inference and consistency
+
+
+Set vars
+	bottom ⊆ set ⊆ top
+	kernel ⊆ set ⊆ envelope
+
+	bottom/top is similar to min/max in bounds consistency, can get if they have support
+
+
+Global constraints
+	alldifferent
+	sum
+	knapsack
+		Ensures that : 
+		- OCCURRENCES[i] * WEIGHT[i] ≤ TOTAL_WEIGHT 
+		- OCCURRENCES[i] * ENERGY[i] = TOTAL_ENERGY 
+
+	bin_packing
+		given item sizes and bin loads
+		ensurse that ITEM_BIN[] is a valid solution (which bin an item was placed)
+
+	cumulative
+		Enforces that at each point in time, the cumulated height of the set of tasks that overlap that point does not exceed a given limit.
+
+	lex_less_eq
+		Ensures that VARS1 is lexicographically less or equal than VARS2.
+
+	count
+		limit number of vars in an array that have been assigned a value
+	global_cardinality
+		like count, but over an array of values and occurances limits
+	element
+		is a variable equal to an element of an array at a particular index
+	regular
+		match array of IntVars against a regex
+
+	scalar
+		Σ COEFFSi * VARSi = SCALAR.	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
