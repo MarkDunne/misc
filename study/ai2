@@ -45,3 +45,19 @@ Underfitting / Overfitting
 
 	Learning Curve
 		The test score tends towards the irreducible error
+		
+Classification Performance
+	ROC Space
+		bottom­left to top­right
+			TPR = FPR 
+			along the line is essentially random
+			above line - better than random
+			below line - worse than random
+		top-left to bottom-right
+			TPR = 1 - FPR
+			along the line classifier performs equally well on positives and negatives
+			above of line - better on positive examples
+			below of line - better on negative examples
+
+	Precision - Out of all the examples that were thought to be positive, how many actually were postitive
+	Recall - Out of all the examples that were actually positive, how many were thought to be positive
