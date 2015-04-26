@@ -45,3 +45,9 @@ Underfitting / Overfitting
 
 	Learning Curve
 		The test score tends towards the irreducible error
+
+Feature Selection
+	2 types of selection
+		get rid of irrelevant (non-predictive) or redundant features (duplicated predictive value)
+
+	Can do selection manually using scatter plots or box plots

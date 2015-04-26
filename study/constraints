@@ -2,6 +2,12 @@ The constraint satisfaction problem is
 	given three a set of variables V, a set of domains D, and a set of constraints C
 	For all variables Vi, find a value from domain Di which satisfy all constraints. 
 
+Backtracking
+	Backtracking searches through all possible assignments of the list of variables in a recursive manner. If assigned the value does not break any constraints, the algorithm moves to the next variable. If the value breaks a constraint, the backtracking algorithm tries the next value in that variable. If there are no remaining values to try, the algorithm 'backtracks' to the previous variable to try the next value. The algorithm continues in this manner until a satisfying complete assignment is found or all variable/value combinations are tried and no solution is found.
+
+	The problem is in the order of d^n where d is the number of values in each domain and n is the number of variables
+
+	In terms of a tree, the domain size is the branching factor and number of variables is the number of levels
 
 Types of consistency (lecture 3)
 	node consistency
@@ -14,6 +20,11 @@ Types of consistency (lecture 3)
 		if there is support for every value in one domain under the a constraint with another
 
 Arc Consistency
+
+	Arc Consistency ensures that each of the values in the domain of one variable have support in the domain of another under the constraints whose scope  
+
+	A value v ϵ Dx is arc consistent under Cxy iff there is a value w ϵ Dy such that (v, w) is a support for Cxy. A variable is arc consistent if all values in its domain are arc consistent
+
 	Revise
 		Revise Cxy only revises Dx, need to revise Cyx to revise Cy
 
@@ -30,7 +41,7 @@ Arc Consistency
 				if the domain is empty
 					stop - no solution
 				else
-					for each constraint featuring the co-variable
+					for each constraint pointing to the first variable
 						add it to the queue
 
 
@@ -310,15 +321,37 @@ Global constraints
 		Σ COEFFSi * VARSi = SCALAR.	
 
 
+Paper Q2 answers	
+	Systematic generative search systematically search through all possible assignments, logically ruling out possibilities as the search progresses. It walks down a tree of possible assignments, if it reaches the bottom of the tree, then it has found a satisfying assignment. Local search starts at the bottom of the tree with a non-optimal assignment. It then uses a greedy approach to improve its assignment in the hope of finding a satisfying assignment.
 
+	while time not up
+		A = random assignment
+		while A is not optimal || not in local min
+			N = neighbours of A
+			if A is better than most optimal in N
+				in local min
+				break
+			else
+				A = most optimal in N
 
+		if time up
+			break
 
+	Simulated annealing is a hill climbing approach which allows locally non-optimal jumps to be made with decreasing probability. If the current assignment is no where near an optimal solution, the algorithm has a higher probability making a jump to an even more non-optimal solution in the hope that a more optimal solution exists over the 'hill'. If the current assignment is near optimal, then the algorithm has a lower probability of making a locally non-optimal jump, the intuition being that the optimal solution might lie nearby.
+	
+	Tabu search behaves like a normal hill climbing algorithm but allows locally non-optimal jumps when stuck in local minima. but is careful not to fall into a loop. It remembers where it has been, keeping a 'tabu' list of previous locations. If a previous location is seen after a locally non-optimal jump has been made, it means the algorithm is moving in a loop and the search is restarted.
 
+	Local search works well when there are many 'acceptable', but not necessarily optimal solutions a problem. In many cases a guided search directly through the assignment space will manage to find one of these solutions very quickly. Local search is also applicable to very large problems that would be intractable to systematic approaches. But they may fail in difficult problems with complex constraints. They are not gauranteed to ever find a solution.
 
+	A = greedy / random assignment
+	while A is not optimal || time not up
+		choose fragment of A to re-assign
+		B = search(A - fragment)
+		if B is more optimal than A
+			A = B
 
-
-
-
-
-
+	how long to keep seaching
+	how large should the neighbour hood be (how many variables to de-assign)
+	how to pick which variables to de-assign
+	how to measure the optimality of an assignment
 
