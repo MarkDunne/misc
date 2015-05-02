@@ -3,6 +3,19 @@ Linear Regression
 	x superscript i = ith example of x
 	x subscript j = jth feature in x
 
+	Complexity of linear regression can be reduced by penalising betas
+	need to standardise features before this or else comparing betas wont make much sense
+	beta0 is not penalised
+	lambda parameter controls how much to penalise
+
+	Lasso regression
+		uses l1-norm on betas
+		can drive betas to exactly 0, so it is doing feature-selection too
+	Ridge regression
+		uses l2-norm
+		can not reduce betas to 0
+
+
 
 KNN
 	Uniform, Distance, Shepards
@@ -45,6 +58,16 @@ Underfitting / Overfitting
 
 	Learning Curve
 		The test score tends towards the irreducible error
+
+Classification
+	Multiclass (n-classes) classification
+		One versus Rest
+			train n models, one for each class setting all other classes to the opposite value
+			predict using model with highest confidence (probability)
+		One versus One
+			train n^2 models, one for every pair of 
+			predict using number of votes for each class, no need for model to produce probabilities
+			kinda like emsembles
 		
 Classification Performance
 	ROC Space
@@ -67,3 +90,71 @@ Feature Selection
 		get rid of irrelevant (non-predictive) or redundant features (duplicated predictive value)
 
 	Can do selection manually using scatter plots or box plots
+
+	Filters
+		Find the most relevant features
+		not smart enough to find relevant pairs of irrelevant features
+		Select best k features based on some scoring function.
+		F-score was studied 
+
+	Wrappers
+		Finds irrelevant and redundant features
+		Try different subsets of features, and measure their score, then use the best subset
+		Ideally, should train ~2^n models for this. Not usually feasible
+			Forward selection		
+				start with best single feature then train n-1 models to select the next one, keep going
+				trains n^2 models
+			backward selection
+				start with full set of features and eliminate the worst one each time
+				trains n model
+
+		Sklearn only implement recursive feature elimination
+			kinda like backward selection
+			only works on learners with betas (linear & svm models)
+
+Dimensionality Reduction			
+	Feature selection by removing redundant features
+	remove the feature that least explain the variance between examples
+
+Ensembles
+	several models vote on a prediction
+
+	bagging
+		estimators of the same type
+		each model is independent and have uniform prediction weights
+
+		if there are n estimators, we create n new training sets by sampling the original with replacement
+		can choose how many estimators by guessing or model selection (usually more is better though)
+
+		generally want to use high variance models to increase diversity among the estimators
+		e.g choose low values of k if using kNN estimator ensemble
+
+		can increase diversity by
+			increasing model variance by changing complexity
+			modify the learner so it has a chance of choosing non-optimally
+			train models on different features
+
+
+	boosting
+		estimators of the same type
+		models are not independent and have weighted predictions
+
+		adaboost
+			train model on training data
+			compute training error
+			re-sample the training data where the previous went wrong
+			repeat
+
+			make prediction using inverse of training error as weights 
+
+
+	stacking
+		estimators of different type
+		roughly
+			split training data into train1, train2		
+			train all estimators on train1
+			use the trained models to predict the values of train2
+			use these predictions as features + y values of train2 to train a meta learner
+
+		can use cross validation to make it more robust
+		meta learner is usually simple

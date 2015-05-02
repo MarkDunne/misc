@@ -67,7 +67,7 @@ Search
 
 	Conflict Directed Backjumping (CBJ)
 
-		Like backjumping, but this time remember a set of conflicting values, just just the deepest.
+		Like backjumping, but this time remember a set of conflicting values, not just the deepest.
 
 		when a conflict happens, jump back to the deepest in the conflict set and add that set to that variable (minus the variable itself)
 
@@ -82,7 +82,7 @@ Search
 
 		could improve by combining with CBJ, not studied. This is known to be a good combination
 		could improve by checking if domain reduced to one value, and just assign it straight away
-		could make variable completely dynamic, choose next variable by smallest domain
+		could make variable order completely dynamic, choose next variable by smallest domain
 		could run AC algorithm every time a domain is reduced 
 
 
@@ -112,26 +112,25 @@ All Different Constraint
 	A constraint is generalised arc consistent (GAC) if and only if it is GAC for each variable in its scope. 
 
 
-Search Heuristics 1
-	Change variable search order
+Search Heuristics 1 - Choosing next variable
 
 	"Most difficult first" principle
 		Try to identify mistakes quickly
 		mistakes should me more common in "difficult" variables6
 
-	Static Ordering
+	Static Ordering (use constraint information)
 		Lexicographic
 			Take whatever order is given
+
+		Largest Degree
+			sort by number of constraints on the variable
+			(same as sorting by number of edges from vertices on a graph)
 
 		Minimum bandwidth
 			bandwidth = distance between two constraint neighbours in the ordering
 			minimum bandwidth = bandwidth with lowest maximum bandwidth among variables
 
 			but finding the minimum bandwidth order is NP-hard 
-
-		Largest Degree
-			sort by number of constraints on the variable
-			(same as sorting by number of edges from vertices on a graph)
 
 		Max cardinality
 			(kinda like greedy minimum bandwidth)
@@ -140,7 +139,7 @@ Search Heuristics 1
 
 			shown to work best (out of the above) for randomly generated problems
 
-	Dynamic Ordering
+	Dynamic Ordering (use variable + constraint information)
 		Order by domain size
 			Smallest probably hardest	
 
@@ -154,8 +153,8 @@ Search Heuristics 1
 			Use constaint counters to weight the degrees
 			Higher counter number probably means more difficult
 
-Search Heuristics 2
-	Choosing best value to try next
+Search Heuristics 2 - Choosing next value
+	 
 	Principles
 		Want to choose a value that is likely to be in a solution
 
@@ -339,7 +338,7 @@ Paper Q2 answers
 
 	Simulated annealing is a hill climbing approach which allows locally non-optimal jumps to be made with decreasing probability. If the current assignment is no where near an optimal solution, the algorithm has a higher probability making a jump to an even more non-optimal solution in the hope that a more optimal solution exists over the 'hill'. If the current assignment is near optimal, then the algorithm has a lower probability of making a locally non-optimal jump, the intuition being that the optimal solution might lie nearby.
 	
-	Tabu search behaves like a normal hill climbing algorithm but allows locally non-optimal jumps when stuck in local minima. but is careful not to fall into a loop. It remembers where it has been, keeping a 'tabu' list of previous locations. If a previous location is seen after a locally non-optimal jump has been made, it means the algorithm is moving in a loop and the search is restarted.
+	Tabu search behaves like a normal hill climbing algorithm but forces locally non-optimal jumps when stuck in local minima. but is careful not to fall into a loop. It remembers where it has been, keeping a 'tabu' list of previous locations. If a previous location is seen after a locally non-optimal jump has been made, it means the algorithm is moving in a loop and the search is restarted.
 
 	Local search works well when there are many 'acceptable', but not necessarily optimal solutions a problem. In many cases a guided search directly through the assignment space will manage to find one of these solutions very quickly. Local search is also applicable to very large problems that would be intractable to systematic approaches. But they may fail in difficult problems with complex constraints. They are not gauranteed to ever find a solution.
 
